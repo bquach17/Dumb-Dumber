@@ -1,7 +1,5 @@
 #include "player.hpp"
 
-// Small Change
-
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -16,13 +14,25 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+
+    board = new Board();
+    color = side;
+    if (color == BLACK)
+    {
+        opponent = WHITE;
+    }
+    else
+    {
+        opponent = BLACK;
+    }
+
 }
 
 /*
  * Destructor for the player.
  */
 Player::~Player() {
-    //This is me
+    delete board;
 }
 
 /*
@@ -40,6 +50,31 @@ Player::~Player() {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
-    
+    /*
+     * TODO: Implement how moves your AI should play here. You should first
+     * process the opponent's opponents move before calculating your own move
+     */
+    board->doMove(opponentsMove, opponent);
+    Move *move = new Move(0, 0);
+    if (!board->hasMoves(color) || board->isDone())
+    {
+        return nullptr;
+    }
+    else
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            move->setX(i);
+            for (int j = 0; j < 8; j++)
+            {
+                move->setY(j);
+                if (board->checkMove(move, color))
+                {
+                    board->doMove(move, color);
+                    return move;
+                }
+            }
+        }
+    }
     return nullptr;
 }
