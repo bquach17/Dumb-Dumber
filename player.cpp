@@ -1,7 +1,5 @@
 #include "player.hpp"
 
-// Small Change
-
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -16,13 +14,15 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+
+    Board *board = new Board();
 }
 
 /*
  * Destructor for the player.
  */
 Player::~Player() {
-    //This is me
+    delete board;
 }
 
 /*
