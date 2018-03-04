@@ -56,6 +56,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      */
     board->doMove(opponentsMove, opponent);
     Move *move = new Move(0, 0);
+    Move *current_move = nullptr;
+    double max_score = -100000;
+    Board *copy = nullptr;
     if (!board->hasMoves(color) || board->isDone())
     {
         return nullptr;
@@ -70,17 +73,35 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                 move->setY(j);
                 if (board->checkMove(move, color))
                 {
-                    board->doMove(move, color);
-                    return move;
+                    std::cerr << "here" << std::endl;
+                    copy = board->copy();
+                    copy->doMove(move, color);
+                    if (heuristic(copy) > max_score)
+                    {
+                        max_score = heuristic(copy);
+                        current_move = move;
+                    }
+                    delete copy;
+                    std::cerr << current_move->getX() << current_move->getY() << std::endl;
+                    std::cerr << max_score << std::endl;
                 }
             }
+        }
+        if (current_move != nullptr)
+        {
+            board->doMove(current_move, color);
+            return current_move;
         }
     }
     return nullptr;
 }
 
-Move Player::miniMax(Board *board, int *x, int *y)
+Move Player::miniMax(Board *copy, int *x, int *y)
 {
     
 }    
 
+
+double Player::heuristic(Board *copy) {
+    return copy->count(color) - copy->count(opponent);
+}
