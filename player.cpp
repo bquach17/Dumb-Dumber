@@ -96,9 +96,16 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     return nullptr;
 }
 
-Move Player::miniMax(Board *copy, int *x, int *y)
+double Player::miniMax(Board *copy, int *x, int *y)
 {
-    
+    if (!hasMoves)
+    {
+        return ;
+    }
+    else
+    {
+
+    }
 }    
 
 
