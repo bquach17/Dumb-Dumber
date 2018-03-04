@@ -96,23 +96,48 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     return nullptr;
 }
 
-<<<<<<< HEAD
-double Player::miniMax(Board *copy, int *x, int *y)
+Move Player::miniMax(Board *copy, Move *ours)
 {
-    if (!hasMoves)
+    if (!copy -> hasMoves(color) || )
     {
         return ;
     }
     else
     {
-
+        int min = -999;
+        for (int depth = 0; depth < 2; depth++) //depth of minimax
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                move->setX(i);
+                for (int j = 0; j < 8; j++)
+                {
+                    move->setY(j);
+                    if (board->checkMove(move, color))
+                    {
+                        copy = board->copy();
+                        copy->doMove(move, color);
+                        if (heuristic(copy, move) > max_score)
+                        {
+                            max_score = heuristic(copy, move);
+                            current_move.setX(move->getX());
+                            current_move.setY(move->getY());
+                        }
+                        delete copy;
+                    }
+                }
+            }
+            move->setX(current_move.getX());
+            move->setY(current_move.getY());
+            if (board->hasMoves(color))
+            {
+                board->doMove(move, color);
+                return move;
+            }
+        }
     }
-}    
+} 
 
-
-double Player::heuristic(Board *copy) {
-    return copy->count(color) - copy->count(opponent);
-=======
 double Player::heuristic(Board *copy, Move *move) {
     double value = copy->count(color) - copy->count(opponent);
     int x = move->getX();
@@ -122,5 +147,5 @@ double Player::heuristic(Board *copy, Move *move) {
         return value + 100;
     }
     return value;
->>>>>>> 240fd1a9f6ca22cb66ba0be0dfbf537ad994b6ee
+
 }
