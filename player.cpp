@@ -142,9 +142,63 @@ double Player::heuristic(Board *copy, Move *move) {
     double value = copy->count(color) - copy->count(opponent);
     int x = move->getX();
     int y = move->getY();
+    // Corners
     if ((x == 0 && y == 0) || (x == 7 && y == 7) || (x == 0 && y == 7) || (x == 7 && y == 0))
     {
         return value + 100;
+    }
+    // Left Edge
+    else if (x == 0)
+    {
+        if (y == 1 || y == 6)
+        {
+            return value - 100;
+        }
+        else
+        {
+            return value + 50;
+        }
+    }
+    // Right Edge
+    else if (x == 7)
+    {
+        if (y == 1 || y == 6)
+        {
+            return value - 100;
+        }
+        else
+        {
+            return value + 50;
+        }
+    }
+    // Top Edge
+    else if (y == 0)
+    {
+        if (x == 1 || x == 6)
+        {
+            return value - 100;
+        }
+        else
+        {
+            return value + 50;
+        }
+    }
+    // Bottom Edge
+    else if (y == 7)
+    {
+        if (x == 1 || x == 6)
+        {
+            return value - 100;
+        }
+        else
+        {
+            return value + 50;
+        }
+    }
+    // Squares located Diagonally from squares
+    else if ((x == 1 && y == 1) || (x == 6 && y == 1) || (x == 1 && y == 6) || (x == 6 && y == 6))
+    {
+        return value - 200;
     }
     return value;
 
