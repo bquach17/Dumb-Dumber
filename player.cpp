@@ -78,3 +78,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
     return nullptr;
 }
+
+Move Player::miniMax(Board *board, int *x, int *y)
+{
+    
+}    
+
