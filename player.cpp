@@ -75,9 +75,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                 {
                     copy = board->copy();
                     copy->doMove(move, color);
-                    if (heuristic(copy, move) > max_score)
+                    if (heuristic(copy, move, color) > max_score)
                     {
-                        max_score = heuristic(copy, move);
+                        max_score = heuristic(copy, move, color);
                         current_move.setX(move->getX());
                         current_move.setY(move->getY());
                     }
@@ -96,8 +96,16 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     return nullptr;
 }
 
-double Player::heuristic(Board *copy, Move *move) {
-    double value = copy->count(color) - copy->count(opponent);
+double Player::heuristic(Board *copy, Move *move,  Side side) {
+    double value;
+    if (side == color)
+    {
+        value = copy->count(color) - copy->count(opponent);
+    }
+    else
+    {
+        value = copy->count(opponent) - copy->count(color);
+    }
     int x = move->getX();
     int y = move->getY();
     // Corners
