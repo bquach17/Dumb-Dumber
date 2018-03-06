@@ -1,5 +1,5 @@
 #include "player.hpp"
-
+#include <vector>
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -48,7 +48,75 @@ Player::~Player() {
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
  */
-Move *Player::doMove(Move *opponentsMove, int msLeft) {
+// Move *Player::doMove1(Move *opponentsMove, int msLeft) {
+
+//     /*
+//      * TODO: Implement how moves your AI should play here. You should first
+//      * process the opponent's opponents move before calculating your own move
+//      */
+//     board->doMove(opponentsMove, opponent);
+//     Move *move = new Move(0, 0);
+//     Move current_move(0, 0);
+//     double max_score = -100000;
+//     Board *copy = nullptr;
+//     if (!board->hasMoves(color) || board->isDone())
+//     {
+//         return nullptr;
+//     }
+//     else
+//     {
+//         for (int i = 0; i < 8; i++)
+//         {
+//             move->setX(i);
+//             for (int j = 0; j < 8; j++)
+//             {
+//                 move->setY(j);
+//                 if (board->checkMove(move, color))
+//                 {
+//                     copy = board->copy();
+//                     copy->doMove(move, color);
+//                     if (heuristic(copy, move) > max_score)
+//                     {
+//                         max_score = heuristic(copy, move);
+//                         current_move.setX(move->getX());
+//                         current_move.setY(move->getY());
+//                     }
+//                     delete copy;
+//                 }
+//             }
+//         }
+//         move->setX(current_move.getX());
+//         move->setY(current_move.getY());
+//         if (board->hasMoves(color))
+//         {
+//             board->doMove(move, color);
+//             return move;
+//         }
+//     }
+//     return nullptr;
+// }
+
+std::vector<Move*> Player::possibleMoves(Board *check, Side side)
+{
+    vector<Move*> possible= {};
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            Move *move = new Move(0, 0);
+            move->setX(i);
+            move->setY(j);
+
+            if (check->checkMove(move, side))
+            {
+                possible.push_back(move);  
+            }
+        }
+    }
+    return possible;
+}
+
+Move* Player::doMove(Move *opponentsMove, int msLeft) {
 
     /*
      * TODO: Implement how moves your AI should play here. You should first
@@ -56,150 +124,158 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      */
     board->doMove(opponentsMove, opponent);
     Move *move = new Move(0, 0);
-    Move current_move(0, 0);
     double max_score = -100000;
-    Board *copy = nullptr;
     if (!board->hasMoves(color) || board->isDone())
     {
         return nullptr;
     }
     else
     {
-        for (int i = 0; i < 8; i++)
+        std::vector<Move*> lst = possibleMoves(board, color);
+        for (unsigned int i = 0; i < lst.size(); i++)
         {
-            move->setX(i);
-            for (int j = 0; j < 8; j++)
+            Board *copy = board -> copy();
+            double save = miniMax(copy, lst[i], 2, 1);
+
+
+            //debug
+            std::cerr << lst[i] -> getX() << " :: " << lst[i] -> getY() << 
+            ":score:" << save<< std::endl;
+
+            if (save > max_score)
             {
-                move->setY(j);
-                if (board->checkMove(move, color))
-                {
-                    copy = board->copy();
-                    copy->doMove(move, color);
-                    if (heuristic(copy, move) > max_score)
-                    {
-                        max_score = heuristic(copy, move);
-                        current_move.setX(move->getX());
-                        current_move.setY(move->getY());
-                    }
-                    delete copy;
-                }
+                max_score = save;
+                move = lst[i];
             }
+            delete copy;
+
         }
-        move->setX(current_move.getX());
-        move->setY(current_move.getY());
         if (board->hasMoves(color))
         {
             board->doMove(move, color);
             return move;
         }
+
     }
     return nullptr;
 }
 
-Move Player::miniMax(Board *copy, Move *ours)
+//minimum score of possible moves within intended depth
+//count: current depth 
+//always start from second level (count always set as 1 is doMove)
+double Player::miniMax(Board *copy, Move *curr, int depth, int count)
 {
-    if (!copy -> hasMoves(color) || )
+    count++;
+    double min = 9999999.9;
+    Side playing = color;
+    Side notplaying = color;
+
+    if (count % 2 != 0) //my turn
     {
-        return ;
+        notplaying = opponent;
+    }
+    else //opponents turn
+    {
+        playing = opponent;
+    }
+    copy -> doMove(curr, notplaying);
+
+
+    if (count > depth) //Base: reached intended level
+    {
+        return heuristic(copy, curr);
     }
     else
     {
-        int min = -999;
-        for (int depth = 0; depth < 2; depth++) //depth of minimax
+        vector<Move*> lst = possibleMoves(copy, playing);
+
+        if (lst.size() == 0) //if no possible moves, return previous point
         {
-            for (int i = 0; i < 8; i++)
-            {
-                move->setX(i);
-                for (int j = 0; j < 8; j++)
-                {
-                    move->setY(j);
-                    if (board->checkMove(move, color))
-                    {
-                        copy = board->copy();
-                        copy->doMove(move, color);
-                        if (heuristic(copy, move) > max_score)
-                        {
-                            max_score = heuristic(copy, move);
-                            current_move.setX(move->getX());
-                            current_move.setY(move->getY());
-                        }
-                        delete copy;
-                    }
-                }
-            }
-            move->setX(current_move.getX());
-            move->setY(current_move.getY());
-            if (board->hasMoves(color))
-            {
-                board->doMove(move, color);
-                return move;
-            }
+            return heuristic(copy, curr);
         }
+        for (unsigned int i = 0; i < lst.size(); i++)
+        {
+            //debug
+            // std::cerr << min << std::endl;
+            // std::cerr << lst[i] -> getX() << " | " << lst[i] -> getY() << std::endl;
+
+            Board *newCopy = copy -> copy();
+            double temp = miniMax(newCopy, lst[i], depth, count);
+            if (min > temp)
+            {
+                min = temp;
+            }
+
+            delete newCopy;
+        }
+        return min;
+        
     }
+    return -1;
 } 
 
 double Player::heuristic(Board *copy, Move *move) {
     double value = copy->count(color) - copy->count(opponent);
-    int x = move->getX();
-    int y = move->getY();
-    // Corners
-    if ((x == 0 && y == 0) || (x == 7 && y == 7) || (x == 0 && y == 7) || (x == 7 && y == 0))
-    {
-        return value + 100;
-    }
-    // Left Edge
-    else if (x == 0)
-    {
-        if (y == 1 || y == 6)
-        {
-            return value - 100;
-        }
-        else
-        {
-            return value + 50;
-        }
-    }
-    // Right Edge
-    else if (x == 7)
-    {
-        if (y == 1 || y == 6)
-        {
-            return value - 100;
-        }
-        else
-        {
-            return value + 50;
-        }
-    }
-    // Top Edge
-    else if (y == 0)
-    {
-        if (x == 1 || x == 6)
-        {
-            return value - 100;
-        }
-        else
-        {
-            return value + 50;
-        }
-    }
-    // Bottom Edge
-    else if (y == 7)
-    {
-        if (x == 1 || x == 6)
-        {
-            return value - 100;
-        }
-        else
-        {
-            return value + 50;
-        }
-    }
-    // Squares located Diagonally from squares
-    else if ((x == 1 && y == 1) || (x == 6 && y == 1) || (x == 1 && y == 6) || (x == 6 && y == 6))
-    {
-        return value - 200;
-    }
+    // int x = move->getX();
+    // int y = move->getY();
+    // // Corners
+    // if ((x == 0 && y == 0) || (x == 7 && y == 7) || (x == 0 && y == 7) || (x == 7 && y == 0))
+    // {
+    //     return value + 100;
+    // }
+    // // Left Edge
+    // else if (x == 0)
+    // {
+    //     if (y == 1 || y == 6)
+    //     {
+    //         return value - 100;
+    //     }
+    //     else
+    //     {
+    //         return value + 50;
+    //     }
+    // }
+    // // Right Edge
+    // else if (x == 7)
+    // {
+    //     if (y == 1 || y == 6)
+    //     {
+    //         return value - 100;
+    //     }
+    //     else
+    //     {
+    //         return value + 50;
+    //     }
+    // }
+    // // Top Edge
+    // else if (y == 0)
+    // {
+    //     if (x == 1 || x == 6)
+    //     {
+    //         return value - 100;
+    //     }
+    //     else
+    //     {
+    //         return value + 50;
+    //     }
+    // }
+    // // Bottom Edge
+    // else if (y == 7)
+    // {
+    //     if (x == 1 || x == 6)
+    //     {
+    //         return value - 100;
+    //     }
+    //     else
+    //     {
+    //         return value + 50;
+    //     }
+    // }
+    // // Squares located Diagonally from squares
+    // else if ((x == 1 && y == 1) || (x == 6 && y == 1) || (x == 1 && y == 6) || (x == 6 && y == 6))
+    // {
+    //     return value - 200;
+    // }
     return value;
 
 }
