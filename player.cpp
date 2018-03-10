@@ -25,7 +25,71 @@ Player::Player(Side side) {
     {
         opponent = BLACK;
     }
-
+    // Fill in weights into our map
+    weights[make_tuple(0, 0)] = 6.21; 
+    weights[make_tuple(0, 1)] = 1.88; 
+    weights[make_tuple(0, 2)] = 12.4; 
+    weights[make_tuple(0, 3)] = 0.37; 
+    weights[make_tuple(0, 4)] = 0.37; 
+    weights[make_tuple(0, 5)] = 12.4; 
+    weights[make_tuple(0, 6)] = 1.88;
+    weights[make_tuple(0, 7)] = 6.21;
+    weights[make_tuple(1, 0)] = 1.88;
+    weights[make_tuple(1, 1)] = -1;
+    weights[make_tuple(1, 2)] = -5.45;
+    weights[make_tuple(1, 3)] = -1.4;
+    weights[make_tuple(1, 4)] = -1.4;
+    weights[make_tuple(1, 5)] = -5.45;
+    weights[make_tuple(1, 6)] = -1.00;
+    weights[make_tuple(1, 7)] = 1.88;
+    weights[make_tuple(2, 0)] = 12.4;
+    weights[make_tuple(2, 1)] = -5.45;
+    weights[make_tuple(2, 2)] = 0.03;
+    weights[make_tuple(2, 3)] = 0.07;
+    weights[make_tuple(2, 4)] = 0.07;
+    weights[make_tuple(2, 5)] = 0.03;
+    weights[make_tuple(2, 6)] = -5.45;
+    weights[make_tuple(2, 7)] = 12.4;
+    weights[make_tuple(3, 0)] = 0.37;
+    weights[make_tuple(3, 1)] = -1.40;
+    weights[make_tuple(3, 2)] = 0.07;
+    weights[make_tuple(3, 3)] = -1.32;
+    weights[make_tuple(3, 4)] = -1.32;
+    weights[make_tuple(3, 5)] = 0.07;
+    weights[make_tuple(3, 6)] = -1.40;
+    weights[make_tuple(3, 7)] = 0.37;
+    weights[make_tuple(4, 0)] = 0.37;
+    weights[make_tuple(4, 1)] = -1.4;
+    weights[make_tuple(4, 2)] = .07;
+    weights[make_tuple(4, 3)] = -1.32;
+    weights[make_tuple(4, 4)] = -1.32;
+    weights[make_tuple(4, 5)] = .07;
+    weights[make_tuple(4, 6)] = -1.40;
+    weights[make_tuple(4, 7)] = 0.37;
+    weights[make_tuple(5, 0)] = 12.4;
+    weights[make_tuple(5, 1)] = -5.45;
+    weights[make_tuple(5, 2)] = 0.03;
+    weights[make_tuple(5, 3)] = 0.07;
+    weights[make_tuple(5, 4)] = 0.07;
+    weights[make_tuple(5, 5)] = 0.03;
+    weights[make_tuple(5, 6)] = -5.45;
+    weights[make_tuple(5, 7)] = 12.4;
+    weights[make_tuple(6, 0)] = 1.88;
+    weights[make_tuple(6, 1)] = -1;
+    weights[make_tuple(6, 2)] = -5.45;
+    weights[make_tuple(6, 3)] = -1.4;
+    weights[make_tuple(6, 4)] = -1.4;
+    weights[make_tuple(6, 5)] = -5.45;
+    weights[make_tuple(6, 6)] = -1.00;
+    weights[make_tuple(6, 7)] = 1.88;
+    weights[make_tuple(7, 0)] = 6.21; 
+    weights[make_tuple(7, 1)] = 1.88; 
+    weights[make_tuple(7, 2)] = 12.4; 
+    weights[make_tuple(7, 3)] = 0.37; 
+    weights[make_tuple(7, 4)] = 0.37; 
+    weights[make_tuple(7, 5)] = 12.4; 
+    weights[make_tuple(7, 6)] = 1.88;
+    weights[make_tuple(7, 7)] = 6.21;
 }
 
 /*
@@ -141,7 +205,7 @@ Move* Player::doMove2(Move *opponentsMove, int msLeft) {
         for (unsigned int i = 0; i < lst.size(); i++)
         {
             Board *copy = board -> copy();
-            double save = miniMax(copy, lst[i], 2, 1);
+            double save = miniMax(copy, lst[i], 4, 1);
 
             if (save > max_score)
             {
@@ -156,7 +220,6 @@ Move* Player::doMove2(Move *opponentsMove, int msLeft) {
             board->doMove(move, color);
             return move;
         }
-
     }
     return nullptr;
 }
@@ -217,87 +280,114 @@ double Player::miniMax(Board *copy, Move *curr, int depth, int count)
 
 double Player::heuristic(Board *copy, Move *move, Side playing) {
     double value = copy->count(color) - copy->count(opponent);
-    if (playing == opponent) {
-        return value;
+    // if (playing == opponent) {
+    //     return value;
+    // }
+    double weight = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board->get(playing, i, j))
+            {
+                if (playing == color)
+                {
+                    weight += weights[make_tuple(i, j)];
+                }
+                else
+                    weight -= weights[make_tuple(i, j)];
+            }
+            else if(board->occupied(i, j)) {
+                if (playing == color)
+                {
+                    weight -= weights[make_tuple(i, j)];
+                }
+                else
+                {
+                    weight += weights[make_tuple(i, j)];
+                }
+            }
+        }
     }
-    double weight = abs(value) / 2;
-    int x = move->getX();
-    int y = move->getY();
+    weight *= abs(value);
+    return weight;
 
-    // Corners
-    if ((x == 0 && y == 0) || (x == 7 && y == 7) || (x == 0 && y == 7) || (x == 7 && y == 0))
-    {
-        return value + 5*weight;
-    }
-    // Left Edge
-    else if (x == 0)
-    {
-        if (y == 1 || y == 6)
-        {
-            return value + weight;
-        }
-        else if (y == 2 || y == 5)
-        {
-            return value + 11 * weight;
-        }
-        else
-        {
-            return value;
-        }
-    }
-    // Right Edge
-    else if (x == 7)
-    {
-        if (y == 1 || y == 6)
-        {
-            return value + weight;
-        }
-        else if (y == 2 || y == 5)
-        {
-            return value + 11 * weight;
-        }
-        else
-        {
-            return value;
-        }
-    }
-    // Top Edge
-    else if (y == 0)
-    {
-        if (x == 1 || x == 6)
-        {
-            return value + weight;
-        }
-        else if (x == 2 || x == 5)
-        {
-            return value + 11 * weight;
-        }
-        else
-        {
-            return value;
-        }
-    }
-    // Bottom Edge
-    else if (y == 7)
-    {
-        if (x == 1 || x == 6)
-        {
-            return value + weight;
-        }
-        else if (x == 2 || x == 5)
-        {
-            return value + 11 * weight;
-        }
-        else
-        {
-            return value;
-        }
-    }
-    // Squares located Diagonally from squares
-    else if ((x == 1 && y == 1) || (x == 6 && y == 1) || (x == 1 && y == 6) || (x == 6 && y == 6))
-    {
-        return value - weight;
-    }
-    return value;
+
+
+    // // Corners
+    // if ((x == 0 && y == 0) || (x == 7 && y == 7) || (x == 0 && y == 7) || (x == 7 && y == 0))
+    // {
+    //     return value + 5*weight;
+    // }
+    // // Left Edge
+    // else if (x == 0)
+    // {
+    //     if (y == 1 || y == 6)
+    //     {
+    //         return value + weight;
+    //     }
+    //     else if (y == 2 || y == 5)
+    //     {
+    //         return value + 11 * weight;
+    //     }
+    //     else
+    //     {
+    //         return value;
+    //     }
+    // }
+    // // Right Edge
+    // else if (x == 7)
+    // {
+    //     if (y == 1 || y == 6)
+    //     {
+    //         return value + weight;
+    //     }
+    //     else if (y == 2 || y == 5)
+    //     {
+    //         return value + 11 * weight;
+    //     }
+    //     else
+    //     {
+    //         return value;
+    //     }
+    // }
+    // // Top Edge
+    // else if (y == 0)
+    // {
+    //     if (x == 1 || x == 6)
+    //     {
+    //         return value + weight;
+    //     }
+    //     else if (x == 2 || x == 5)
+    //     {
+    //         return value + 11 * weight;
+    //     }
+    //     else
+    //     {
+    //         return value;
+    //     }
+    // }
+    // // Bottom Edge
+    // else if (y == 7)
+    // {
+    //     if (x == 1 || x == 6)
+    //     {
+    //         return value + weight;
+    //     }
+    //     else if (x == 2 || x == 5)
+    //     {
+    //         return value + 11 * weight;
+    //     }
+    //     else
+    //     {
+    //         return value;
+    //     }
+    // }
+    // // Squares located Diagonally from squares
+    // else if ((x == 1 && y == 1) || (x == 6 && y == 1) || (x == 1 && y == 6) || (x == 6 && y == 6))
+    // {
+    //     return value - weight;
+    // }
+    // return value;
 
 }

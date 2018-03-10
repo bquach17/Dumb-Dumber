@@ -6,6 +6,8 @@
 #include "common.hpp"
 #include "board.hpp"
 #include <cmath>
+#include <tuple>
+#include <map>
 using namespace std;
 
 class Player {
@@ -16,6 +18,7 @@ public:
     Board *board;
     Side color;
     Side opponent;
+    map<tuple<int, int>, float> weights;
     Move *doMove2(Move *opponentsMove, int msLeft);
     Move *doMove1(Move *opponentsMove, int msLeft);
     Move *doMove(Move *opponentsMove, int msLeft);
