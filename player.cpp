@@ -313,7 +313,7 @@ double Player::heuristic(Board *copy, Move *move, Side playing) {
     return weight;
 
 
-
+    // Old Heuristic
     // // Corners
     // if ((x == 0 && y == 0) || (x == 7 && y == 7) || (x == 0 && y == 7) || (x == 7 && y == 0))
     // {
