@@ -278,11 +278,25 @@ double Player::miniMax(Board *copy, Move *curr, int depth, int count)
     return -1;
 } 
 
-double Player::heuristic(Board *copy, Move *move, Side playing) {
+double Player::getParity(Board *copy) {
     double value = copy->count(color) - copy->count(opponent);
-    // if (playing == opponent) {
-    //     return value;
-    // }
+    value /= (copy->count(color) + copy->count(opponent));
+    return 100 * value;
+}
+
+double Player::getMobility(Board *copy) {
+    double OurMobility = possibleMoves(copy, color).size(); 
+    double OppMobility = possibleMoves(copy, opponent).size();
+    if (OurMobility + OppMobility != 0)
+    {
+        return 100 * (OurMobility - OppMobility) / (OurMobility + OppMobility);
+    }
+    return 0;
+}
+
+double Player::heuristic(Board *copy, Move *move, Side playing) {
+    double parity = getParity(copy);
+    double mobility = getMobility(copy);
     double weight = 0;
     for (int i = 0; i < 8; i++)
     {
@@ -309,7 +323,7 @@ double Player::heuristic(Board *copy, Move *move, Side playing) {
             }
         }
     }
-    weight *= abs(value);
+    weight *= abs(parity);
     return weight;
 
 

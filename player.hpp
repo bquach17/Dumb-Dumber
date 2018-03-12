@@ -23,6 +23,8 @@ public:
     Move *doMove1(Move *opponentsMove, int msLeft);
     Move *doMove(Move *opponentsMove, int msLeft);
     double heuristic(Board *copy, Move *move, Side Playing);
+    double getParity(Board *copy);
+    double getMobility(Board *copy);
     std::vector<Move*> possibleMoves(Board *board, Side side);
     double miniMax(Board *copy, Move *curr, int depth, int count);
 
