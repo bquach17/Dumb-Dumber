@@ -403,7 +403,7 @@ double Player::heuristic(Board *copy, Move *move, Side playing) {
     double mobility = getMobility(copy);
     double corner = getCorners(copy);
     double stability = getStability(copy, playing);
-    return parity + mobility + corner + stability;
+    return 25 * parity + 5 * mobility + 30 * corner + 25 * stability;
 
 
     // Old Heuristic
