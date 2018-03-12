@@ -393,7 +393,7 @@ double Player::getStability(Board *copy, Side playing) {
         }
     }
     if (myweight + oppweight != 0) {
-        return 100 * (myweight - oppweight) / (myweight - oppweight);
+        return 100 * (myweight - oppweight) / (myweight + oppweight);
     }
     return 0;
 }
