@@ -299,63 +299,63 @@ double Player::getCorners(Board *copy) {
     double oppcaptured = 0;
     Move * temp = new Move(0, 0);
     if (copy->get(color, 0, 0)) {
-        mycaptured += 2;
+        mycaptured += 5;
     }
     else if(copy->get(opponent, 0, 0)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
     else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
     else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+        mycaptured += 3;
+        oppcaptured -= 5;
     }
     *temp = Move(7, 7);
     if (copy->get(color, 7, 7)) {
-        mycaptured += 2;
+        mycaptured += 5;
     }
     else if (copy->get(opponent, 7, 7)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
     else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
     else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+        mycaptured += 3;
+        oppcaptured -= 5;
     }
     *temp = Move(0, 7);
     if (copy->get(color, 0, 7)) {
-        mycaptured += 2;
+        mycaptured += 5;
     }
     else if (copy->get(opponent, 0, 7)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
     else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
     else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+        mycaptured += 3;
+        oppcaptured -= 5;
     }
     *temp = Move(7, 7);
     if (copy->get(color, 0, 7)) {
-        mycaptured += 2;
+        mycaptured += 5;
     }
     else if (copy->get(opponent, 0, 7)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
     else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
     else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+        mycaptured += 3;
+        oppcaptured -= 5;
     }
     delete temp;
     if (oppcaptured + mycaptured != 0) {
