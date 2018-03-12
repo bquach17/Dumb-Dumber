@@ -205,7 +205,7 @@ Move* Player::doMove2(Move *opponentsMove, int msLeft) {
         for (unsigned int i = 0; i < lst.size(); i++)
         {
             Board *copy = board -> copy();
-            double save = miniMax(copy, lst[i], 4, 1);
+            double save = miniMax(copy, lst[i], 3, 1);
 
             if (save > max_score)
             {
@@ -294,10 +294,79 @@ double Player::getMobility(Board *copy) {
     return 0;
 }
 
-double Player::heuristic(Board *copy, Move *move, Side playing) {
-    double parity = getParity(copy);
-    double mobility = getMobility(copy);
-    double weight = 0;
+double Player::getCorners(Board *copy) {
+    double mycaptured = 0;
+    double oppcaptured = 0;
+    Move * temp = new Move(0, 0);
+    if (copy->get(color, 0, 0)) {
+        mycaptured += 2;
+    }
+    else if(copy->get(opponent, 0, 0)) {
+        oppcaptured += 2;
+    }
+    else if (copy->checkMove(temp, opponent)) {
+        oppcaptured++;
+        mycaptured -= 2;
+    }
+    else if (copy->checkMove(temp, color)) {
+        mycaptured++;
+        oppcaptured -= 2;
+    }
+    *temp = Move(7, 7);
+    if (copy->get(color, 7, 7)) {
+        mycaptured += 2;
+    }
+    else if (copy->get(opponent, 7, 7)) {
+        oppcaptured += 2;
+    }
+    else if (copy->checkMove(temp, opponent)) {
+        oppcaptured++;
+        mycaptured -= 2;
+    }
+    else if (copy->checkMove(temp, color)) {
+        mycaptured++;
+        oppcaptured -= 2;
+    }
+    *temp = Move(0, 7);
+    if (copy->get(color, 0, 7)) {
+        mycaptured += 2;
+    }
+    else if (copy->get(opponent, 0, 7)) {
+        oppcaptured += 2;
+    }
+    else if (copy->checkMove(temp, opponent)) {
+        oppcaptured++;
+        mycaptured -= 2;
+    }
+    else if (copy->checkMove(temp, color)) {
+        mycaptured++;
+        oppcaptured -= 2;
+    }
+    *temp = Move(7, 7);
+    if (copy->get(color, 0, 7)) {
+        mycaptured += 2;
+    }
+    else if (copy->get(opponent, 0, 7)) {
+        oppcaptured += 2;
+    }
+    else if (copy->checkMove(temp, opponent)) {
+        oppcaptured++;
+        mycaptured -= 2;
+    }
+    else if (copy->checkMove(temp, color)) {
+        mycaptured++;
+        oppcaptured -= 2;
+    }
+    delete temp;
+    if (oppcaptured + mycaptured != 0) {
+        return 100 * (mycaptured - oppcaptured) / (mycaptured + oppcaptured);
+    }
+    return 0;
+}
+
+double Player::getStability(Board *copy, Side playing) {
+    double myweight = 0;
+    double oppweight = 0;
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
@@ -306,25 +375,35 @@ double Player::heuristic(Board *copy, Move *move, Side playing) {
             {
                 if (playing == color)
                 {
-                    weight += weights[make_tuple(i, j)];
+                    myweight += weights[make_tuple(i, j)];
                 }
                 else
-                    weight -= weights[make_tuple(i, j)];
+                    oppweight -= weights[make_tuple(i, j)];
             }
             else if(board->occupied(i, j)) {
                 if (playing == color)
                 {
-                    weight -= weights[make_tuple(i, j)];
+                    myweight -= weights[make_tuple(i, j)];
                 }
                 else
                 {
-                    weight += weights[make_tuple(i, j)];
+                    oppweight += weights[make_tuple(i, j)];
                 }
             }
         }
     }
-    weight *= abs(parity);
-    return weight;
+    if (myweight + oppweight != 0) {
+        return 100 * (myweight - oppweight) / (myweight - oppweight);
+    }
+    return 0;
+}
+
+double Player::heuristic(Board *copy, Move *move, Side playing) {
+    double parity = getParity(copy);
+    double mobility = getMobility(copy);
+    double corner = getCorners(copy);
+    double stability = getStability(copy, playing);
+    return parity + mobility + corner + stability;
 
 
     // Old Heuristic

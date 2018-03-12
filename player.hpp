@@ -25,6 +25,8 @@ public:
     double heuristic(Board *copy, Move *move, Side Playing);
     double getParity(Board *copy);
     double getMobility(Board *copy);
+    double getCorners(Board *copy);
+    double getStability(Board *copy, Side Playing);
     std::vector<Move*> possibleMoves(Board *board, Side side);
     double miniMax(Board *copy, Move *curr, int depth, int count);
 
