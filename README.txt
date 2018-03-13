@@ -3,6 +3,7 @@ Brandon - I did the heuristic functions. I read different strategy websites and 
 my final heuristic structure off of two different papers. I played around with the weights
 that were in each heuristic along with the static table of weights. I also adjusted the 
 importance of each category.
+Terry - I implemented the miniMax and alpha-beta pruning algorithm. I tried an improved version of the alpha-beta pruning algorithm called the recursive best-first search minimax, which is faster than alpha-beta pruning so we could explore more depth. 
 
 Improvements
 We started with a few if statements for our heuristic that solely depended on a greedy strategy 

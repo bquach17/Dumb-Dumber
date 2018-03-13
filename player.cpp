@@ -124,45 +124,45 @@ Move *Player::doMove1(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    board->doMove(opponentsMove, opponent);
-    Move *move = new Move(0, 0);
-    Move current_move(0, 0);
-    double max_score = -100000;
-    Board *copy = nullptr;
-    if (!board->hasMoves(color) || board->isDone())
-    {
-        return nullptr;
-    }
-    else
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            move->setX(i);
-            for (int j = 0; j < 8; j++)
-            {
-                move->setY(j);
-                if (board->checkMove(move, color))
-                {
-                    copy = board->copy();
-                    copy->doMove(move, color);
-                    if (heuristic(copy, move, color) > max_score)
-                    {
-                        max_score = heuristic(copy, move, color);
-                        current_move.setX(move->getX());
-                        current_move.setY(move->getY());
-                    }
-                    delete copy;
-                }
-            }
-        }
-        move->setX(current_move.getX());
-        move->setY(current_move.getY());
-        if (board->hasMoves(color))
-        {
-            board->doMove(move, color);
-            return move;
-        }
-    }
+    // board->doMove(opponentsMove, opponent);
+    // Move *move = new Move(0, 0);
+    // Move current_move(0, 0);
+    // double max_score = -100000;
+    // Board *copy = nullptr;
+    // if (!board->hasMoves(color) || board->isDone())
+    // {
+    //     return nullptr;
+    // }
+    // else
+    // {
+    //     for (int i = 0; i < 8; i++)
+    //     {
+    //         move->setX(i);
+    //         for (int j = 0; j < 8; j++)
+    //         {
+    //             move->setY(j);
+    //             if (board->checkMove(move, color))
+    //             {
+    //                 copy = board->copy();
+    //                 copy->doMove(move, color);
+    //                 if (heuristic(copy, move, color) > max_score)
+    //                 {
+    //                     max_score = heuristic(copy, move, color);
+    //                     current_move.setX(move->getX());
+    //                     current_move.setY(move->getY());
+    //                 }
+    //                 delete copy;
+    //             }
+    //         }
+    //     }
+    //     move->setX(current_move.getX());
+    //     move->setY(current_move.getY());
+    //     if (board->hasMoves(color))
+    //     {
+    //         board->doMove(move, color);
+    //         return move;
+    //     }
+    // }
     return nullptr;
 }
 
@@ -194,69 +194,99 @@ Move* Player::doMove2(Move *opponentsMove, int msLeft) {
      */
     board->doMove(opponentsMove, opponent);
     Move *move = new Move(0, 0);
-    double max_score = -100000;
     if (!board->hasMoves(color) || board->isDone())
     {
         return nullptr;
     }
-    else
-    {
-        std::vector<Move*> lst = possibleMoves(board, color);
-        for (unsigned int i = 0; i < lst.size(); i++)
-        {
-            Board *copy = board -> copy();
-            double save = miniMax(copy, lst[i], 3, 1);
-
-            if (save > max_score)
-            {
-                max_score = save;
-                move = lst[i];
-            }
-            delete copy;
-
-        }
-        if (board->hasMoves(color))
-        {
-            board->doMove(move, color);
-            return move;
-        }
-    }
-    return nullptr;
+    tuple <Move*, double> final = miniMaxab(board, 5, 1, -99999.9, 99999.9);
+    move = get<0>(final);
+    board -> doMove(move, color);
+    return move;
 }
 
 //minimum score of possible moves within intended depth
 //count: current depth 
-//always start from second level (count always set as 1 is doMove)
-double Player::miniMax(Board *copy, Move *curr, int depth, int count)
+//always start from second level (count always set as 1 in doMove)
+// double Player::miniMax(Board *copy, Move *curr, int depth, int count)
+// {
+//     count++;
+//     double min = 9999999.9;
+//     Side playing = color;
+//     Side notplaying = color;
+
+//     if (count % 2 != 0) //my turn
+//     {
+//         notplaying = opponent;
+//     }
+//     else //opponents turn
+//     {
+//         playing = opponent;
+//     }
+//     copy -> doMove(curr, notplaying);
+
+
+//     if (count > depth) //Base: reached intended level
+//     {
+//         return heuristic(copy, curr, playing);
+//     }
+//     else
+//     {
+//         vector<Move*> lst = possibleMoves(copy, playing);
+
+//         if (lst.size() == 0) //if no possible moves, return previous point
+//         {
+//             return heuristic(copy, curr, playing);
+//         }
+//         for (unsigned int i = 0; i < lst.size(); i++)
+//         {
+//             //debug
+//             // std::cerr << min << std::endl;
+//             // std::cerr << lst[i] -> getX() << " | " << lst[i] -> getY() << std::endl;
+
+//             Board *newCopy = copy -> copy();
+//             double temp = miniMax(newCopy, lst[i], depth, count);
+//             if (min > temp)
+//             {
+//                 min = temp;
+//             }
+
+//             delete newCopy;
+//         }
+//         return min;
+        
+//     }
+//     return -1;
+// } 
+
+//ab 
+tuple<Move*, double> Player::miniMaxab(Board *copy, int depth, int count, double a, double b)
 {
     count++;
-    double min = 9999999.9;
     Side playing = color;
-    Side notplaying = color;
+    double bestScore;
 
-    if (count % 2 != 0) //my turn
+    if (count % 2 == 0) //my turn
     {
-        notplaying = opponent;
+        bestScore = -99999.0;
     }
     else //opponents turn
     {
         playing = opponent;
+        bestScore = 99999.0;
     }
-    copy -> doMove(curr, notplaying);
 
+    vector<Move*> lst = possibleMoves(copy, playing);
 
-    if (count > depth) //Base: reached intended level
+    if (count > depth || lst.size() == 0) //Base: reached intended level or no possible moves left
     {
-        return heuristic(copy, curr, playing);
+        double score =  heuristic(copy, playing);
+        Move *temp = new Move(0,0);
+        tuple <Move*, double> final (temp, score);
+        return final;
     }
     else
     {
-        vector<Move*> lst = possibleMoves(copy, playing);
-
-        if (lst.size() == 0) //if no possible moves, return previous point
-        {
-            return heuristic(copy, curr, playing);
-        }
+        Move* bestMove = new Move (0, 0);
         for (unsigned int i = 0; i < lst.size(); i++)
         {
             //debug
@@ -264,18 +294,39 @@ double Player::miniMax(Board *copy, Move *curr, int depth, int count)
             // std::cerr << lst[i] -> getX() << " | " << lst[i] -> getY() << std::endl;
 
             Board *newCopy = copy -> copy();
-            double temp = miniMax(newCopy, lst[i], depth, count);
-            if (min > temp)
+            newCopy -> doMove(lst[i], playing);
+            tuple <Move*, double> child = miniMaxab(newCopy, depth, count, a, b);
+            
+            if (playing == color)
             {
-                min = temp;
+                if(get<1>(child) >= bestScore)
+                {
+                    bestMove = lst[i];
+                    bestScore = get<1>(child);
+                }
+                a = max(a, bestScore);
+            }
+            else
+            {
+                if(get<1>(child) <= bestScore)
+                {
+                    bestMove = lst[i];
+                    bestScore = get<1>(child);
+                }
+                b = min(bestScore, b);
+            }
+            if (b <= a)
+            {
+                delete newCopy;
+                break;
             }
 
             delete newCopy;
         }
-        return min;
-        
+
+        tuple<Move*, double> result (bestMove, bestScore);
+        return result;        
     }
-    return -1;
 } 
 
 double Player::getParity(Board *copy) {
@@ -399,7 +450,7 @@ double Player::getStability(Board *copy, Side playing) {
     return 0;
 }
 
-double Player::heuristic(Board *copy, Move *move, Side playing) {
+double Player::heuristic(Board *copy, Side playing) {
     double parity = getParity(copy);
     double mobility = getMobility(copy);
     double corner = getCorners(copy);
