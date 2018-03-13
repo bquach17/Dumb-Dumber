@@ -35,12 +35,12 @@ Player::Player(Side side) {
     weights[make_tuple(0, 6)] = -3;
     weights[make_tuple(0, 7)] = 4;
     weights[make_tuple(1, 0)] = -3;
-    weights[make_tuple(1, 1)] = -4;
+    weights[make_tuple(1, 1)] = -4; //  
     weights[make_tuple(1, 2)] = -1;
     weights[make_tuple(1, 3)] = -1;
     weights[make_tuple(1, 4)] = -1;
     weights[make_tuple(1, 5)] = -1;
-    weights[make_tuple(1, 6)] = -4;
+    weights[make_tuple(1, 6)] = -4; // 
     weights[make_tuple(1, 7)] = -3;
     weights[make_tuple(2, 0)] = 2;
     weights[make_tuple(2, 1)] = -1;
@@ -75,12 +75,12 @@ Player::Player(Side side) {
     weights[make_tuple(5, 6)] = -1;
     weights[make_tuple(5, 7)] = 2;
     weights[make_tuple(6, 0)] = -3;
-    weights[make_tuple(6, 1)] = -4;
+    weights[make_tuple(6, 1)] = -4; //
     weights[make_tuple(6, 2)] = -1;
     weights[make_tuple(6, 3)] = -1;
     weights[make_tuple(6, 4)] = -1;
     weights[make_tuple(6, 5)] = -1;
-    weights[make_tuple(6, 6)] = -4;
+    weights[make_tuple(6, 6)] = -4; //
     weights[make_tuple(6, 7)] = -3;
     weights[make_tuple(7, 0)] = 4; 
     weights[make_tuple(7, 1)] = -3; 
@@ -299,63 +299,63 @@ double Player::getCorners(Board *copy) {
     double oppcaptured = 0;
     Move * temp = new Move(0, 0);
     if (copy->get(color, 0, 0)) {
-        mycaptured += 2;
+        mycaptured += 200;
     }
     else if(copy->get(opponent, 0, 0)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
-    else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+    if (copy->checkMove(temp, opponent)) {
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
-    else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+    if (copy->checkMove(temp, color)) {
+        mycaptured += 10;
+        oppcaptured -= 5;
     }
     *temp = Move(7, 7);
     if (copy->get(color, 7, 7)) {
-        mycaptured += 2;
+        mycaptured += 200;
     }
     else if (copy->get(opponent, 7, 7)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
-    else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+    if (copy->checkMove(temp, opponent)) {
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
-    else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+    if (copy->checkMove(temp, color)) {
+        mycaptured += 10;
+        oppcaptured -= 5;
     }
     *temp = Move(0, 7);
     if (copy->get(color, 0, 7)) {
-        mycaptured += 2;
+        mycaptured += 200;
     }
     else if (copy->get(opponent, 0, 7)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
-    else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+    if (copy->checkMove(temp, opponent)) {
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
-    else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+    if (copy->checkMove(temp, color)) {
+        mycaptured += 10;
+        oppcaptured -= 5;
     }
     *temp = Move(7, 7);
     if (copy->get(color, 0, 7)) {
-        mycaptured += 2;
+        mycaptured += 200;
     }
     else if (copy->get(opponent, 0, 7)) {
-        oppcaptured += 2;
+        oppcaptured += 5;
     }
-    else if (copy->checkMove(temp, opponent)) {
-        oppcaptured++;
-        mycaptured -= 2;
+    if (copy->checkMove(temp, opponent)) {
+        oppcaptured += 3;
+        mycaptured -= 5;
     }
-    else if (copy->checkMove(temp, color)) {
-        mycaptured++;
-        oppcaptured -= 2;
+    if (copy->checkMove(temp, color)) {
+        mycaptured += 10;
+        oppcaptured -= 5;
     }
     delete temp;
     if (oppcaptured + mycaptured != 0) {
@@ -377,8 +377,9 @@ double Player::getStability(Board *copy, Side playing) {
                 {
                     myweight += weights[make_tuple(i, j)];
                 }
-                else
+                else {
                     oppweight -= weights[make_tuple(i, j)];
+                }
             }
             else if(board->occupied(i, j)) {
                 if (playing == color)
